@@ -3,6 +3,8 @@
 import Link from 'next/link'
 import { useSession, signIn, signOut } from 'next-auth/react'
 import { AiOutlineHeart } from 'react-icons/ai';
+import { FaUserCircle } from 'react-icons/fa';
+import Profile from './Profile';
 
 
 const Navbar = () => {
@@ -15,21 +17,22 @@ const Navbar = () => {
         MovieExplorer
       </Link>
 
-      {/* Navigation Items */}
+ 
       <div className="flex items-center space-x-6">
-        {/* Cart */}
         <Link href="/watchlist" className="relative hover:text-red-400 transition">
           <AiOutlineHeart className="text-xl" />
         </Link>
 
-        {/* Auth Button */}
+        {session && (
+          <div className="flex items-center space-x-2">
+            <Link href='/profile'> 
+            <FaUserCircle className="text-xl" />
+            </Link>
+          </div>
+        )}
+        
         {session ? (
-          <button
-            onClick={() => signOut()}
-            className="bg-white-600 px-4 py-1 rounded hover:bg-gray-700 transition"
-          >
-            Logout
-          </button>
+          <></>
         ) : (
           <button
             onClick={() => signIn()}
@@ -37,7 +40,8 @@ const Navbar = () => {
           >
             Login
           </button>
-        )}
+        )
+        }
       </div>
     </nav>
   )

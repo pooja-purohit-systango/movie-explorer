@@ -1,19 +1,19 @@
-import NextAuth from "next-auth";
+import NextAuth, { JWT } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
-// Define the types for the JWT token and session
-interface JWT {
+interface User {
+  id : string;
+  name: string;
+  password: string;
+  email?: string;
+}
+ interface Session {
   id: string;
   name: string;
   email?: string;
 }
 
-interface Session {
-  id: string;
-  name: string;
-  email?: string;
-}
-
+const users: { name: string; email: string; password: string }[] = [];
 const LOGIN_API_URL = "https://67f8e890094de2fe6e9fb1d5.mockapi.io/popular_movies/users";
 
 export const authOptions = {
@@ -29,14 +29,14 @@ export const authOptions = {
           const response = await fetch(LOGIN_API_URL);
           const users = await response.json(); 
           const user = users.find(
-            (user: any) =>
+            (user: User) =>
               user.name === credentials?.name && user.password === credentials?.password
           );
 
           if (user) {
-            return { id: user.id, name: user.name, email: user.name }; // You can return any user info
+            return { id: user.id, name: user.name, email: user.name }; 
           } else {
-            return null; // Authentication failed
+            return null; 
           }
         } catch (error) {
           console.error("Error during authentication:", error);
@@ -46,13 +46,14 @@ export const authOptions = {
     }),
   ],
   session: {
-    strategy: 'jwt' as const, // Explicitly type as 'jwt' (or 'database' if using DB-based sessions)
+    strategy: 'jwt',
   },
   pages: {
-    signIn: "/signin", // Custom signin page URL
+    signIn: "/signin",
+    signUp: '/signup' 
   },
   callbacks: {
-    async jwt({ token, user }: { token: JWT, user?: any }) {
+    async jwt({ token, user }: { token: JWT, user?: User }) {
       if (user) {
         token.id = user.id;
         token.name = user.name;
@@ -71,3 +72,4 @@ export const authOptions = {
 
 const handler = NextAuth(authOptions);
 export { handler as GET, handler as POST };
+export { users }; 
